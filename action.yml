@@ -14,7 +14,11 @@ inputs:
     description: 'Tailscale version to use.'
     required: true
     default: '1.34.2'
-  args:
+  tailscaled_args:
+    description: 'Optional additional arguments to `tailscaled`'
+    required: false
+    default: ''
+  tailscale_args:
     description: 'Optional additional arguments to `tailscale up`'
     required: false
     default: ''
@@ -58,12 +62,13 @@ runs:
         shell: bash
         env:
           TAILSCALE_AUTHKEY: ${{ inputs.authkey }}
-          ADDITIONAL_ARGS: ${{ inputs.args }}
+          TAILSCALED_ADDITIONAL_ARGS: ${{ inputs.tailscaled_args }}
+          TAILSCALE_ADDITIONAL_ARGS: ${{ inputs.tailscale_args }}
           HOSTNAME: ${{ inputs.hostname }}
         run: |
           sudo tailscaled \
-            --tun=userspace-networking 2>~/tailscaled.log &
+            ${TAILSCALED_ADDITIONAL_ARGS} 2>~/tailscaled.log &
           if [ -z "${HOSTNAME}" ]; then
             HOSTNAME="github-$(cat /etc/hostname)"
           fi
-          sudo tailscale up --authkey ${TAILSCALE_AUTHKEY} --hostname=${HOSTNAME} --accept-routes ${ADDITIONAL_ARGS}
+          sudo tailscale up --authkey ${TAILSCALE_AUTHKEY} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS}
