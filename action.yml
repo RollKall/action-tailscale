@@ -76,7 +76,7 @@ runs:
                   "capabilities": {
                       "devices": {
                           "create": {
-                              "reusable": true,
+                              "reusable": false,
                               "ephemeral": true,
                               "preauthorized": true,
                               "tags": [ "tag:corp" ]
