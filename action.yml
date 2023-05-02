@@ -7,9 +7,6 @@ branding:
   icon: 'arrow-right-circle'
   color: 'gray-dark'
 inputs:
-  authkey:
-    description: 'Your Tailscale authentication key, from the admin panel.'
-    required: true
   version:
     description: 'Tailscale version to use.'
     required: true
@@ -25,6 +22,14 @@ inputs:
   hostname:
     description: 'Fixed hostname to use.'
     required: false
+    default: ''
+  oauth_client_id:
+    description: 'Tailscale OAuth Client ID.'
+    required: true
+    default: ''
+  oauth_client_secret:
+    description: 'Tailscale OAuth Client Secret.'
+    required: true
     default: ''
 runs:
     using: 'composite'
@@ -65,10 +70,31 @@ runs:
           TAILSCALED_ADDITIONAL_ARGS: ${{ inputs.tailscaled_args }}
           TAILSCALE_ADDITIONAL_ARGS: ${{ inputs.tailscale_args }}
           HOSTNAME: ${{ inputs.hostname }}
+          OAUTH_CLIENT_ID: ${{ inputs.oauth_client_id }}
+          OAUTH_CLIENT_SECRET: ${{ input.oauth_client_secret }}
         run: |
+          ACCESS_TOKEN=$(curl -d "client_id=${OAUTH_CLIENT_ID}" -d "client_secret=${OAUTH_CLIENT_SECRET}" \
+               "https://api.tailscale.com/api/v2/oauth/token" | jq -r '.access_token')
+          AUTH_TOKEN=$(curl "https://api.tailscale.com/api/v2/tailnet/rollkall.com/keys" \
+              -u "$ACCESS_TOKEN:$OAUTH_CLIENT_SECRET" \
+              --data-binary '
+              {
+                  "capabilities": {
+                      "devices": {
+                          "create": {
+                              "reusable": true,
+                              "ephemeral": true,
+                              "preauthorized": true,
+                              "tags": [ "tag:corp" ]
+                          }
+                      }
+                  },
+                  "expirySeconds": 1800
+              }' | jq -r '.key'
+          )
           sudo tailscaled \
             ${TAILSCALED_ADDITIONAL_ARGS} 2>~/tailscaled.log &
           if [ -z "${HOSTNAME}" ]; then
             HOSTNAME="github-$(cat /etc/hostname)"
           fi
-          sudo tailscale up --authkey ${TAILSCALE_AUTHKEY} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS}
+          sudo tailscale up --authkey ${AUTH_TOKEN} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS}
