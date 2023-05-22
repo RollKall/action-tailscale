@@ -60,7 +60,6 @@ runs:
       - name: Run Tailscale
         shell: bash
         env:
-          TAILSCALE_AUTHKEY: ${{ inputs.authkey }}
           TAILSCALED_ADDITIONAL_ARGS: ${{ inputs.tailscaled_args }}
           TAILSCALE_ADDITIONAL_ARGS: ${{ inputs.tailscale_args }}
           HOSTNAME: ${{ inputs.hostname }}
@@ -79,7 +78,7 @@ runs:
                               "reusable": false,
                               "ephemeral": true,
                               "preauthorized": true,
-                              "tags": [ "tag:corp" ]
+                              "tags": [ "tag:ci-runner" ]
                           }
                       }
                   },
