@@ -90,4 +90,4 @@ runs:
           if [ -z "${HOSTNAME}" ]; then
             HOSTNAME="github-$(cat /etc/hostname)"
           fi
-          sudo tailscale up --authkey ${AUTH_TOKEN} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS} --accept-dns --exit-node 100.112.9.100
+          sudo tailscale up --authkey ${AUTH_TOKEN} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS} --accept-dns
