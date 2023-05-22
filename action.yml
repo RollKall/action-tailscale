@@ -10,7 +10,7 @@ inputs:
   version:
     description: 'Tailscale version to use.'
     required: true
-    default: '1.36.0'
+    default: '1.40.1'
   tailscaled_args:
     description: 'Optional additional arguments to `tailscaled`'
     required: false
