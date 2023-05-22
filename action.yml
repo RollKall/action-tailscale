@@ -97,4 +97,4 @@ runs:
           if [ -z "${HOSTNAME}" ]; then
             HOSTNAME="github-$(cat /etc/hostname)"
           fi
-          sudo -E tailscale up --authkey ${AUTH_TOKEN} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS} --accept-dns=true
+          sudo -E tailscale up --authkey ${AUTH_TOKEN} --hostname=${HOSTNAME} --accept-routes ${TAILSCALE_ADDITIONAL_ARGS}
