@@ -61,7 +61,7 @@ runs:
         shell: bash
         run: |
           sudo -E tailscaled \
-            ${TAILSCALED_ADDITIONAL_ARGS}2>~/tailscaled.log &
+            ${TAILSCALED_ADDITIONAL_ARGS} 2>~/tailscaled.log &
           # And check that tailscaled came up. The CLI will block for a bit waiting
           # for it. And --json will make it exit with status 0 even if we're logged
           # out (as we will be). Without --json it returns an error if we're not up.
